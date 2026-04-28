@@ -1,0 +1,87 @@
+{
+  "index_patterns": ["bluestack-*"],
+  "priority": 200,
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0,
+      "refresh_interval": "5s"
+    },
+    "mappings": {
+      "dynamic_templates": [
+        {
+          "strings_as_keyword": {
+            "match_mapping_type": "string",
+            "mapping": {
+              "type": "keyword",
+              "ignore_above": 1024,
+              "fields": {
+                "text": {
+                  "type": "text"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "@timestamp":          { "type": "date" },
+        "timestamp":           { "type": "date" },
+        "severity":            { "type": "keyword" },
+        "event_type":          { "type": "keyword" },
+        "type":                { "type": "keyword" },
+        "source_tool":         { "type": "keyword" },
+        "tags":                { "type": "keyword" },
+        "detail":              { "type": "text" },
+
+        "source_ip":           { "type": "ip" },
+        "destination":         { "type": "keyword" },
+
+        "source": {
+          "properties": {
+            "ip":              { "type": "ip" }
+          }
+        },
+        "destination_obj": {
+          "properties": {
+            "address":         { "type": "keyword" }
+          }
+        },
+
+        "mitre": {
+          "properties": {
+            "technique_id":    { "type": "keyword" },
+            "tactic":          { "type": "keyword" }
+          }
+        },
+
+        "honeypot":            { "type": "keyword" },
+        "source_port":         { "type": "long" },
+        "auth_username":       { "type": "keyword" },
+        "auth_password_attempt": { "type": "keyword" },
+        "command":             { "type": "text" },
+        "user_agent":          { "type": "keyword" },
+
+        "threatpulse": {
+          "properties": {
+            "kind":            { "type": "keyword" },
+            "ioc":             { "type": "keyword" },
+            "ioc_type":        { "type": "keyword" },
+            "hits":            { "type": "keyword" },
+            "hit_count":       { "type": "integer" }
+          }
+        },
+        "threat_level":        { "type": "keyword" },
+
+        "scan": {
+          "properties": {
+            "generated_at":    { "type": "date" },
+            "log_type":        { "type": "keyword" },
+            "log_file":        { "type": "keyword" },
+            "threshold":       { "type": "keyword" }
+          }
+        }
+      }
+    }
+  }
+}

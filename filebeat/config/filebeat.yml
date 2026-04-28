@@ -1,0 +1,66 @@
+# Optional Filebeat sidecar for tail-style ingestion.
+#
+# Use this when you want Filebeat to watch the JSON log files written by
+# the source tools and ship them into Logstash, instead of the
+# `tail -F | nc` pattern from the README.
+#
+# Mount the host directories that contain the tool logs into the Filebeat
+# container, then run: `docker compose --profile filebeat up -d`
+# (a profile-gated filebeat service can be added to docker-compose.yml when
+# you wire this up — left out of the default stack so the laptop footprint
+# stays small).
+
+filebeat.inputs:
+  - type: filestream
+    id: loghound
+    enabled: true
+    paths:
+      - /logs/loghound/*.json
+    parsers:
+      - ndjson:
+          target: ""
+          add_error_key: true
+    fields:
+      bluestack_source: loghound
+    fields_under_root: true
+
+  - type: filestream
+    id: netsentinel
+    enabled: true
+    paths:
+      - /logs/netsentinel/*.json
+    parsers:
+      - ndjson:
+          target: ""
+          add_error_key: true
+    fields:
+      bluestack_source: netsentinel
+    fields_under_root: true
+
+  - type: filestream
+    id: honeynet
+    enabled: true
+    paths:
+      - /logs/honeynet/*.json
+    parsers:
+      - ndjson:
+          target: ""
+          add_error_key: true
+    fields:
+      bluestack_source: honeynet
+    fields_under_root: true
+
+# Filebeat routes to per-source Logstash ports based on the
+# `bluestack_source` tag. This avoids needing one Filebeat output per source.
+output.logstash:
+  hosts: ["logstash:5044"]
+
+# A small Beats pipeline could be added to logstash/pipeline/ that
+# inspects [bluestack_source] and forwards via pipeline-to-pipeline to the
+# right per-tool pipeline. Left as a follow-up; the four TCP pipelines above
+# are sufficient for the default lab use case.
+
+processors:
+  - add_host_metadata: ~
+
+logging.level: info

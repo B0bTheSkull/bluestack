@@ -1,0 +1,4 @@
+{"ioc":"185.220.101.42","type":"ip","threat_level":"MALICIOUS","sources_queried":3,"results":[{"source":"urlhaus","found":true,"tags":["tor","exit-node"]},{"source":"feodo","found":true,"tags":["c2"]},{"source":"otx","found":true,"pulse_count":18}]}
+{"ioc":"198.51.100.7","type":"ip","threat_level":"MALICIOUS","sources_queried":3,"results":[{"source":"urlhaus","found":false},{"source":"feodo","found":false},{"source":"otx","found":true,"pulse_count":4}]}
+{"ioc":"evil.example","type":"domain","threat_level":"MALICIOUS","sources_queried":2,"results":[{"source":"urlhaus","found":true,"tags":["dns-tunnel"]},{"source":"otx","found":true,"pulse_count":2}]}
+{"ioc":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","type":"hash","threat_level":"CLEAN","sources_queried":2,"results":[{"source":"malwarebazaar","found":false},{"source":"otx","found":false}]}

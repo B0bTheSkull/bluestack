@@ -1,0 +1,7 @@
+{"timestamp":"2026-04-27T22:10:01.220000","honeypot":"SSH","source_ip":"185.220.101.42","source_port":54222,"event_type":"credential_attempt","details":{"username":"root","password":"toor"}}
+{"timestamp":"2026-04-27T22:10:02.301000","honeypot":"SSH","source_ip":"185.220.101.42","source_port":54224,"event_type":"credential_attempt","details":{"username":"admin","password":"admin"}}
+{"timestamp":"2026-04-27T22:10:04.010000","honeypot":"SSH","source_ip":"185.220.101.42","source_port":54231,"event_type":"command_executed","details":{"command":"uname -a; whoami; cat /etc/passwd"}}
+{"timestamp":"2026-04-27T22:10:18.998000","honeypot":"HTTP","source_ip":"185.220.101.42","source_port":51022,"event_type":"path_probe","details":{"path":"/wp-login.php","method":"POST","user_agent":"Mozilla/5.0 (compatible; Hello-World/1.0)"}}
+{"timestamp":"2026-04-27T22:10:19.110000","honeypot":"HTTP","source_ip":"185.220.101.42","source_port":51024,"event_type":"path_probe","details":{"path":"/.env","method":"GET","user_agent":"curl/7.81.0"}}
+{"timestamp":"2026-04-27T22:10:32.012000","honeypot":"FTP","source_ip":"185.220.101.42","source_port":33001,"event_type":"credential_attempt","details":{"username":"anonymous","password":"anonymous@"}}
+{"timestamp":"2026-04-27T22:10:32.456000","honeypot":"SYSTEM","source_ip":"185.220.101.42","source_port":0,"event_type":"coordinated_scan","details":{"services":["SSH","HTTP","FTP"],"window_seconds":60}}

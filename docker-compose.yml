@@ -1,0 +1,95 @@
+name: bluestack
+
+x-stack-version: &stack-version "8.13.4"
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION:-8.13.4}
+    container_name: bluestack-elasticsearch
+    environment:
+      - node.name=bluestack-es
+      - cluster.name=bluestack
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms${ES_HEAP:-1g} -Xmx${ES_HEAP:-1g}"
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+      - action.destructive_requires_name=true
+      - ingest.geoip.downloader.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+    ports:
+      - "127.0.0.1:${ES_PORT:-9200}:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9200/_cluster/health | grep -E '\"status\":\"(green|yellow)\"' >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    networks:
+      - bluestack
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION:-8.13.4}
+    container_name: bluestack-kibana
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      - SERVER_NAME=bluestack-kibana
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - SERVER_PUBLICBASEURL=http://localhost:${KIBANA_PORT:-5601}
+      - TELEMETRY_OPTIN=false
+      - XPACK_REPORTING_ENABLED=false
+    volumes:
+      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+    ports:
+      - "127.0.0.1:${KIBANA_PORT:-5601}:5601"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:5601/api/status | grep -E '\"level\":\"available\"' >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    networks:
+      - bluestack
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:${STACK_VERSION:-8.13.4}
+    container_name: bluestack-logstash
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      - "LS_JAVA_OPTS=-Xms${LS_HEAP:-512m} -Xmx${LS_HEAP:-512m}"
+      - PIPELINE_WORKERS=2
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/config/pipelines.yml:/usr/share/logstash/config/pipelines.yml:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      - "127.0.0.1:${LS_LOGHOUND_PORT:-5001}:5001"
+      - "127.0.0.1:${LS_NETSENTINEL_PORT:-5002}:5002"
+      - "127.0.0.1:${LS_HONEYNET_PORT:-5003}:5003"
+      - "127.0.0.1:${LS_THREATPULSE_PORT:-5004}:5004"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9600/_node/stats | grep -E '\"status\":\"green\"' >/dev/null"]
+      interval: 15s
+      timeout: 5s
+      retries: 30
+    networks:
+      - bluestack
+
+volumes:
+  es-data:
+    driver: local
+
+networks:
+  bluestack:
+    driver: bridge

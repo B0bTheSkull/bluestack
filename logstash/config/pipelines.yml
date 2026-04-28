@@ -1,0 +1,18 @@
+# Each source tool gets its own pipeline so a parse error in one
+# doesn't stall the others, and so workers/queues can be tuned per source.
+
+- pipeline.id: loghound
+  path.config: "/usr/share/logstash/pipeline/loghound.conf"
+  pipeline.workers: 1
+
+- pipeline.id: netsentinel
+  path.config: "/usr/share/logstash/pipeline/netsentinel.conf"
+  pipeline.workers: 1
+
+- pipeline.id: honeynet
+  path.config: "/usr/share/logstash/pipeline/honeynet.conf"
+  pipeline.workers: 1
+
+- pipeline.id: threatpulse
+  path.config: "/usr/share/logstash/pipeline/threatpulse.conf"
+  pipeline.workers: 1

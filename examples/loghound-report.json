@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-04-27T22:14:08.000Z",
+  "log_type": "auth",
+  "log_file": "/var/log/auth.log",
+  "threshold": 5,
+  "since": null,
+  "total_findings": 3,
+  "findings": [
+    {
+      "severity": "HIGH",
+      "type": "ssh_brute_force",
+      "detail": "47 failed SSH login attempts from 198.51.100.42 within 60s",
+      "source_ip": "198.51.100.42",
+      "count": 47,
+      "users_targeted": ["root", "admin", "ubuntu", "pi"],
+      "mitre_technique": "T1110.001",
+      "mitre_tactic": "credential-access"
+    },
+    {
+      "severity": "MEDIUM",
+      "type": "sudo_privilege_escalation",
+      "detail": "User 'webapp' invoked sudo to run /bin/bash without TTY",
+      "source_user": "webapp",
+      "command": "/bin/bash",
+      "mitre_technique": "T1548.003",
+      "mitre_tactic": "privilege-escalation"
+    },
+    {
+      "severity": "CRITICAL",
+      "type": "successful_login_after_brute_force",
+      "detail": "Successful login from 198.51.100.42 as 'admin' after 47 prior failures",
+      "source_ip": "198.51.100.42",
+      "username": "admin",
+      "mitre_technique": "T1110.001",
+      "mitre_tactic": "credential-access"
+    }
+  ]
+}

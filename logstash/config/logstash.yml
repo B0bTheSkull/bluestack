@@ -1,0 +1,11 @@
+http.host: "0.0.0.0"
+api.http.host: "0.0.0.0"
+
+# We point monitoring at the same cluster Logstash ships into.
+xpack.monitoring.enabled: false
+
+# We manage pipelines via pipelines.yml (one input port per source tool).
+config.reload.automatic: true
+config.reload.interval: 30s
+
+log.level: info

@@ -1,0 +1,16 @@
+.env
+*.log
+__pycache__/
+.venv/
+venv/
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+
+# Local Elasticsearch data dump if anyone runs without docker volumes
+data/
+
+# Kibana exports during dashboard development
+kibana/dashboards/*.draft.ndjson
