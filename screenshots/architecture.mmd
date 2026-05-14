@@ -1,0 +1,40 @@
+flowchart LR
+    subgraph tools["Upstream Blue-Team Tools"]
+        LH["LogHound\n(auth log analyzer)"]
+        NS["NetSentinel\n(network anomaly detector)"]
+        HN["HoneyNet\n(multi-protocol honeypot)"]
+        TP["ThreatPulse\n(IOC enrichment)"]
+    end
+
+    subgraph logstash["Logstash  :5001–5004"]
+        LP1["loghound.conf\nTCP :5001\njson codec\nsplit findings[]"]
+        LP2["netsentinel.conf\nTCP :5002\njson_lines codec\nATT&CK map"]
+        LP3["honeynet.conf\nTCP :5003\njson_lines codec\nATT&CK map"]
+        LP4["threatpulse.conf\nTCP :5004\njson_lines codec\nhit aggregation"]
+    end
+
+    subgraph es["Elasticsearch  :9200"]
+        IDX1["bluestack-loghound-*"]
+        IDX2["bluestack-netsentinel-*"]
+        IDX3["bluestack-honeynet-*"]
+        IDX4["bluestack-threatpulse-*"]
+    end
+
+    KB["Kibana  :5601\nDiscover · Lens · Dashboards"]
+
+    LH -- "JSON report\nnc / curl" --> LP1
+    NS -- "NDJSON stream\ntail | nc" --> LP2
+    HN -- "NDJSON stream\ntail | nc" --> LP3
+    TP -- "NDJSON batch\nbulk pipe" --> LP4
+
+    LP1 -- "HTTP bulk\nindex" --> IDX1
+    LP2 -- "HTTP bulk\nindex" --> IDX2
+    LP3 -- "HTTP bulk\nindex" --> IDX3
+    LP4 -- "HTTP bulk\nindex" --> IDX4
+
+    IDX1 & IDX2 & IDX3 & IDX4 --> KB
+
+    style tools fill:#1a1a2e,stroke:#4a9eff,color:#e0e0e0
+    style logstash fill:#16213e,stroke:#f5a623,color:#e0e0e0
+    style es fill:#0f3460,stroke:#53d8fb,color:#e0e0e0
+    KB --> |"you"|KB
