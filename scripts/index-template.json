@@ -35,14 +35,13 @@
         "detail":              { "type": "text" },
 
         "source_ip":           { "type": "ip" },
-        "destination":         { "type": "keyword" },
 
         "source": {
           "properties": {
             "ip":              { "type": "ip" }
           }
         },
-        "destination_obj": {
+        "destination": {
           "properties": {
             "address":         { "type": "keyword" }
           }
