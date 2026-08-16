@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    name: Validate stack config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: docker compose config is valid
+        run: docker compose config -q
+
+      - name: shellcheck scripts
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: ./scripts
+
+      - name: JSON files parse
+        run: |
+          set -e
+          for f in scripts/index-template.json examples/*.json; do
+            python3 -m json.tool "$f" > /dev/null
+            echo "OK  $f"
+          done
+
+  logstash-configtest:
+    name: Logstash pipeline config test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Validate every pipeline's grammar with the same Logstash version the
+      # stack ships (config.test_and_exit parses only -- it never connects to ES).
+      - name: Test each pipeline config
+        run: |
+          set -e
+          VER=8.13.4
+          for conf in logstash/pipeline/*.conf; do
+            name=$(basename "$conf")
+            echo "::group::config test $name"
+            docker run --rm \
+              -e LS_JAVA_OPTS="-Xms256m -Xmx256m" \
+              -v "$PWD/logstash/pipeline:/pipeline:ro" \
+              "docker.elastic.co/logstash/logstash:$VER" \
+              logstash -f "/pipeline/$name" --config.test_and_exit
+            echo "::endgroup::"
+          done
