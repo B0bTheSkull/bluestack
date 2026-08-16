@@ -15,9 +15,11 @@ jobs:
         run: docker compose config -q
 
       - name: shellcheck scripts
-        uses: ludeeus/action-shellcheck@master
-        with:
-          scandir: ./scripts
+        # Use the runner's own shellcheck rather than a third-party action, so
+        # there's no unpinned external action in the supply chain.
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+          shellcheck scripts/*.sh
 
       - name: JSON files parse
         run: |
