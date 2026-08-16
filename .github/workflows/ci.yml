@@ -1,8 +1,12 @@
 name: CI
 
+# Push-only (trusted committers). NOT pull_request: the logstash config-test
+# compiles pipeline .conf files, and a Logstash `ruby` filter init block can run
+# code at compile time -- so a fork PR could execute arbitrary code in CI. On a
+# solo repo, fork PRs aren't expected; re-add pull_request only behind a guarded,
+# non-executing check if that changes.
 on:
   push:
-  pull_request:
 
 jobs:
   validate:
